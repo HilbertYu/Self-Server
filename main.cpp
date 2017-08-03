@@ -68,11 +68,11 @@ void * server_proc(void*)
         str_pkg.push_back(buf.substr(s, e));
     }
 
-    pthread_mutex_unlock(&g_setup_mux);
 
     HySocketServer * s = new HySocketServer;
     s->setup("0.0.0.0", 30000);
 
+    pthread_mutex_unlock(&g_setup_mux);
     HySocketClient * cl = s->accept();
 
     for (size_t i = 0; i< sp.size() - 1; ++i)
