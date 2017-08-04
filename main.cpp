@@ -11,7 +11,6 @@
 using namespace std;
 
 pthread_mutex_t g_setup_mux;
-vector<int> g_recv_split;
 
 string getFileBuf(const char * file_name)
 {
@@ -64,7 +63,6 @@ void * server_proc(void*)
         int s = sp[i];
         int e = sp[i+1] - s;
 
-        g_recv_split.push_back(e);
         str_pkg.push_back(buf.substr(s, e));
     }
 
@@ -109,14 +107,11 @@ int main(int argc, const char * argv[])
         HySocketClient * cl = new HySocketClient;
         cl->connect("127.0.0.1", 30000);
 
-        int i = 0;
-
         while (1)
         {
-            int recv_size = g_recv_split[i++];
             char buf[102400] = {0};
 
-            int ret = cl->recv(buf, 102400);
+            int ret = cl->recv(buf, sizeof(buf));
             pthread_mutex_unlock(&g_setup_mux);
 
             if (ret <= 0)
