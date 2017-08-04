@@ -80,6 +80,7 @@ void * server_proc(void*)
         int pkg_size = str_pkg[i].size();
         const char * pkg_buf = str_pkg[i].c_str();
         int ret = cl->send(pkg_buf, pkg_size);
+        pthread_mutex_lock(&g_setup_mux);
 
         printf("[Server] send = %d\n", ret);
     }
@@ -115,11 +116,13 @@ int main(int argc, const char * argv[])
             int recv_size = g_recv_split[i++];
             char buf[102400] = {0};
 
-            int ret = cl->recv(buf, recv_size);
+            int ret = cl->recv(buf, 102400);
+            pthread_mutex_unlock(&g_setup_mux);
+
             if (ret <= 0)
                 break;
 
-            //printf("ret = %d\n", ret);
+            printf("ret = %d\n", ret);
             //printf("%s", buf);
 
         }
